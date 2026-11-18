@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FaxDE — UI preview</title>
+<style>
+  :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:#17233b;background:#f4f6fa;font-synthesis:none;text-rendering:optimizeLegibility}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:#f4f6fa}
+  button{font:inherit;cursor:pointer}
+  .frame{width:min(100%,480px);min-height:100vh;margin:auto;background:#fff;border-inline:1px solid #e1e7f0;display:flex;flex-direction:column}
+  .chrome{height:34px;padding:0 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e9edf4;color:#333d4d;font-size:12px;flex:none}
+  .chrome-icon{width:15px;height:15px;display:grid;place-items:center;background:#687080;color:#fff;border-radius:3px;font-size:10px;font-weight:700}
+  .chrome-spacer{flex:1}
+  .chrome button{border:0;background:transparent;color:#647083;padding:3px 5px;font-size:15px}
+  .top{padding:12px 16px 10px;border-bottom:1px solid #e5eaf2}
+  .brand-row{display:flex;align-items:center;gap:9px}
+  .brand-mark{height:24px;width:24px;border-radius:7px;background:#2450df;color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;box-shadow:0 2px 4px #244ed52a}
+  .brand{font-weight:700;font-size:14px;letter-spacing:-.2px}
+  .user{margin-left:auto;color:#66758d;font-size:12px}
+  .state-pill{display:inline-flex;margin-top:9px;padding:3px 9px;border-radius:999px;background:#214fe0;color:#fff;font-weight:650;font-size:11px}
+  .summary{margin-top:7px;padding:7px 10px;border:1px solid #dce5f1;background:#f2f6fb;color:#42516b;border-radius:18px;font-size:12px;line-height:1.45}
+  .backend{display:flex;align-items:center;gap:6px;margin-top:7px;color:#66758d;font-size:12px}
+  .connected{border:1px solid #a9e7ce;background:#f2fff9;color:#138452;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600}
+  main{padding:12px;display:grid;gap:10px;align-content:start}
+  .card{border:1px solid #dfe6f0;border-radius:9px;background:#fff;box-shadow:0 1px 2px #1b33520a}
+  .mode-card{padding:11px 12px}
+  .mode-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:11px;color:#687891;margin:0 0 7px 1px}
+  .mode-status{display:flex;align-items:center;gap:7px}
+  .mode-heading .primary{height:32px;padding:0 16px}
+  .empty-match{color:#74829a;font-style:italic;padding:9px 6px}
+  .matches-list{border-top:1px solid #edf0f5}
+  .match-group{border:0;border-bottom:1px solid #edf0f5;margin:0;padding:0}
+  .matches-list summary{display:flex;align-items:center;gap:7px;padding:8px 6px;font-weight:600}
+  .match-status{margin-left:auto;margin-right:5px;font-size:14px;font-weight:700;line-height:1}
+  .match-status.check{color:#138452}
+  .match-status.warning{color:#c89100}
+  .match-fields{display:grid;gap:5px;padding:0 10px 10px 38px}
+  .match-field{display:flex;justify-content:space-between;gap:10px;color:#52627c;font-size:10px;line-height:1.4}
+  .field-status{margin-left:auto;color:#138452;font-size:12px;font-weight:700;line-height:1}
+  .field-status.warning{color:#c89100}
+  .match-empty{color:#74829a;font-size:10px;font-style:italic;padding:2px 0}
+  .mode-tabs{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:3px;padding:3px;border:1px solid #e2e8f1;border-radius:7px;background:#f3f6fa}
+  .mode-tab{min-height:38px;padding:5px 4px;border:1px solid transparent;border-radius:5px;background:transparent;color:#384966;font-size:11px;line-height:1.15}
+  .mode-tab.active{background:#fff;border-color:#e5eaf2;color:#214fe0;font-weight:650;box-shadow:0 1px 2px #26385412}
+  .mode-tab span{display:block;font-size:9px;color:#78869b;margin-top:2px}
+  .mode-tab.active span{color:#596a87}
+  .action-card{padding:12px}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .primary,.secondary{height:38px;border-radius:6px;font-size:12px;font-weight:650}
+  .primary{background:#2450df;border:1px solid #2450df;color:white;box-shadow:0 1px 2px #173dbb33}
+  .primary:hover{background:#1d44c8}
+  .secondary{background:white;border:1px solid #dce3ed;color:#26344e;font-weight:550}
+  .secondary:hover{background:#f8faff}
+  .run-note{margin-top:8px;color:#1e2c45;font-size:12px;line-height:1.45;font-weight:600}
+  .card-heading{padding:11px 12px 0;font-size:12px;font-weight:700;color:#23314b}
+  .cal-output{padding:9px 12px 12px}
+  .intro{margin:0 0 10px;color:#586985;font-size:11px;line-height:1.45}
+  .section-label{font-size:10px;letter-spacing:.055em;font-weight:750;color:#586883;margin:11px 0 5px}
+  .table-wrap{overflow-x:auto;border-top:1px solid #edf0f5}
+  table{border-collapse:collapse;width:100%;font-size:10.5px;line-height:1.35;text-align:left;min-width:430px}
+  th{padding:6px 6px;color:#677790;font-size:10px;font-weight:600;border-bottom:1px solid #edf0f5;white-space:nowrap}
+  td{padding:6px;color:#293750;vertical-align:top;border-bottom:1px solid #f0f2f6}
+  tbody tr:last-child td{border-bottom:0}
+  .field{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#40516d;font-size:10px}
+  .should{color:#675122}
+  .should.has-value{background:#fff9e8}
+  .pending{color:#a56a19}
+  .audit-card{padding-bottom:5px}
+  .audit-head{padding:11px 12px 4px;font-size:12px;font-weight:700}
+  .audit-sections{padding:0 12px}
+  .audit-item{padding:8px 0}
+  .audit-item+.audit-item{border-top:1px solid #edf0f5}
+  .audit-label{color:#71809a;font-size:10px;margin-bottom:3px}
+  .audit-value{color:#293750;font-size:11px;line-height:1.4;overflow-wrap:anywhere;min-height:15px}
+  details{border-top:1px solid #edf0f5;margin:4px 12px 8px;padding-top:8px}
+  summary{cursor:pointer;color:#53637e;font-size:11px;font-weight:650;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary:before{content:"▸";margin-right:6px;color:#72819a}
+  details[open] summary:before{content:"▾"}
+  .log{display:grid;gap:7px;margin-top:9px}
+  .log-row{display:flex;gap:7px;align-items:baseline;font-size:10px;color:#43536e}
+  .time{font-family:ui-monospace,monospace;color:#72819a;font-size:9px;white-space:nowrap}
+  .tag{border-radius:999px;border:1px solid #dce5f0;background:#f3f6fa;padding:2px 6px;color:#586b87;font-size:9px;white-space:nowrap}
+  .oe-rules-card>.oe-section{border:0;margin:0;padding:0}
+  .oe-rules-card>.oe-section>summary{padding:11px 12px;color:#23314b;font-size:12px;font-weight:400}
+  .oe-rule-list{padding:0 12px 10px}
+  .oe-rule-list details{border:0;border-top:1px solid #edf0f5;margin:0;padding:0}
+  .oe-rule-list summary{padding:9px 4px;color:#40516e;font-size:11px;font-weight:650}
+  .oe-rule-copy{padding:0 8px 10px 20px;color:#53637d;font-size:10px;line-height:1.45}
+  .oe-rule-copy p{margin:0 0 6px}
+  .oe-rule-copy p:last-child{margin-bottom:0}
+  .diagnostics{padding:11px 12px}
+  .diagnostics details{border:0;margin:0;padding:0}
+  .diagnostics summary{color:#65748c}
+  .ping{margin-top:10px;padding:6px 9px;border:1px solid #dce4ef;border-radius:5px;background:#fff;color:#40516e;font-size:11px}
+  .ping-result{margin-left:8px;color:#138452;font-size:11px}
+  footer{margin-top:auto;border-top:1px solid #e8edf3;padding:11px 14px;display:flex;justify-content:space-between;color:#71809a;font-size:10px}
+  footer a{color:#2450df;text-decoration:none}
+  .toast{display:none;min-height:34px;padding:8px 10px;margin-top:8px;border-radius:6px;background:#eef5ff;color:#2e4e8d;font-size:11px}
+  .toast.visible{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .toast.completed{background:#f2fff9;color:#138452;border:1px solid #a9e7ce}
+  .toast-label{font-weight:700}
+  .timer{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+  @media(min-width:650px){body{padding:18px 0}.frame{min-height:calc(100vh - 36px);border-radius:10px;overflow:hidden;box-shadow:0 14px 50px #20365420}.chrome{border-radius:10px 10px 0 0}}
+</style>
+</head>
+<body>
+<div class="frame" id="app">
+
+  <main>
+    <section class="card mode-card">
+      <div class="mode-heading">
+        <div class="mode-status"><span>Mode</span><span class="connected">connected</span></div>
+        <button class="primary" id="start" type="button">Start</button>
+      </div>
+      <div class="mode-tabs" role="group" aria-label="Processing mode">
+        <button class="mode-tab active" type="button" aria-pressed="true">Calibrate</button>
+        <button class="mode-tab" type="button" aria-pressed="false">Process</button>
+        <button class="mode-tab" type="button" aria-pressed="false">Full Auto</button>
+      </div>
+      <div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-label"></span><span class="timer" id="elapsed">0s</span></div>
+    </section>
+    <section class="card">
+      <div class="card-heading" id="output-heading">Calibrate output</div>
+      <div class="cal-output">
+        <p class="intro" id="pre-start-message">Press Start to begin processing the request</p>
+        <div class="section-label">PAGE TAGGING PLAN</div>
+        <div class="table-wrap"><table><thead><tr><th>Page</th><th>Would tag as</th><th>Basis</th></tr></thead><tbody><tr><td id="page-number"></td><td id="page-tag"></td><td id="page-basis" title="OE-003 — Trigger: A page is a routine cover with no other relevant information or is truly blank, and OE-002 does not apply. Action: Select Gray X. Exceptions: Do not apply to page 2 of an exact two-page Fax when page 1 is an order. Status: Active."></td></tr><tr><td id="page-number-2"></td><td id="page-tag-2"></td><td id="page-basis-2" title="OE-003 — Trigger: A page is a routine cover with no other relevant information or is truly blank, and OE-002 does not apply. Action: Select Gray X. Exceptions: Do not apply to page 2 of an exact two-page Fax when page 1 is an order. Status: Active."></td></tr><tr><td id="page-number-3-5"></td><td id="page-tag-3-5"></td><td id="page-basis-3-5" title="OE-003 — Trigger: A page is a routine cover with no other relevant information or is truly blank, and OE-002 does not apply. Action: Select Gray X. Exceptions: Do not apply to page 2 of an exact two-page Fax when page 1 is an order. Status: Active."></td></tr></tbody></table></div>
+        <div class="section-label">MISMATCHES</div>
+        <div class="table-wrap"><table><thead><tr><th>Field</th><th>Current value</th><th>Should be</th><th>Basis</th></tr></thead><tbody>
+          <tr><td class="field" id="mismatch-field-1"></td><td id="mismatch-current-1"></td><td class="should" id="mismatch-should-1"></td><td id="mismatch-basis-1" title="OE-005 — Trigger: The office is unclear or no exact source-supported match exists. Action: After provider selection, exclude Verify Office and New Office from the real-office count. Select the sole real office, or a defensible source-supported match when multiple remain. Exceptions: With zero real offices or no defensible choice, select Verify Office. Never select New Office. Status: Active."></td></tr>
+          <tr><td class="field" id="mismatch-field-2"></td><td id="mismatch-current-2"></td><td class="should" id="mismatch-should-2"></td><td id="mismatch-basis-2" title="OE-006 — Trigger: An insurance plan must be validated or selected. Action: Map sliding-scale coverage to Uninsured Prompt Pay; BCBS names to the Blue Cross Blue Shield family; Cigna SureFit to Cigna; primary AARP Medicare to AARP Medicare Complete; and secondary AARP to its supplemental option. Prefer a normal center-linked option over OON. Exceptions: Apply primary/secondary blocking thresholds. Uncertain secondary coverage must not change the primary selection. Status: Active."></td></tr>
+        </tbody></table></div>
+        <div class="section-label">MATCHES</div>
+                <div class="matches-list">
+          <details class="match-group">
+            <summary><span>Patient</span><span class="match-status" id="patient-status" hidden></span></summary>
+            <div class="match-fields">
+              <div class="match-field"><span>First name</span><span class="field-status" id="patient-first-name" hidden></span></div>
+              <div class="match-field"><span>Last name</span><span class="field-status" id="patient-last-name" hidden></span></div>
+              <div class="match-field"><span>DOB</span><span class="field-status" id="patient-dob" hidden></span></div>
+              <div class="match-field"><span>Address</span><span class="field-status" id="patient-address" hidden></span></div>
+              <div class="match-field"><span>Phone</span><span class="field-status" id="patient-phone" hidden></span></div>
+              <div class="match-field"><span>Email</span><span class="field-status" id="patient-email" hidden></span></div>
+            </div>
+          </details>
+          <details class="match-group">
+            <summary><span>Provider</span><span class="match-status" id="provider-status" hidden></span></summary>
+            <div class="match-fields">
+              <div class="match-field"><span>Name</span><span class="field-status" id="provider-name" hidden></span></div>
+              <div class="match-field"><span>Office</span><span class="field-status warning" id="provider-office" hidden></span></div>
+            </div>
+          </details>
+          <details class="match-group">
+            <summary><span>Insurance</span><span class="match-status" id="insurance-status" hidden></span></summary>
+            <div class="match-fields">
+              <div class="match-field"><span>Primary Name</span><span class="field-status warning" id="insurance-primary-name" hidden></span></div>
+              <div class="match-field"><span>Primary Policy</span><span class="field-status" id="insurance-primary-policy" hidden></span></div>
+              <div class="match-field"><span>Primary Group</span><span class="field-status" id="insurance-primary-group" hidden></span></div>
+              <div class="match-field"><span>Secondary Name</span><span class="field-status" id="insurance-secondary-name" hidden></span></div>
+              <div class="match-field"><span>Secondary Policy</span><span class="field-status" id="insurance-secondary-policy" hidden></span></div>
+              <div class="match-field"><span>Secondary Group</span><span class="field-status" id="insurance-secondary-group" hidden></span></div>
+            </div>
+          </details>
+          <details class="match-group">
+            <summary><span>Exam and ICD</span><span class="match-status" id="exam-icd-status" hidden></span></summary>
+            <div class="match-fields">
+              <div class="match-field"><span>Exam 1</span><span class="field-status" id="exam-1" hidden></span></div>
+              <div class="match-field"><span>ICD10 codes</span><span class="field-status" id="icd10-codes" hidden></span></div>
+              <div class="match-field"><span>Priority</span><span class="field-status" id="exam-priority" hidden></span></div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+    <section class="card oe-rules-card">
+      <details class="oe-section">
+        <summary class="card-heading">OE Basis Rule Explanations</summary>
+        <div class="oe-rule-list">
+        <details><summary>OE-001 · CPT-first exam selection and approved mappings</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> An exam must be added, corrected, or replaced.</p><p><strong>Action:</strong> Determine CPT first; search by CPT and choose the best-supported center-linked option by modality, anatomy, laterality, contrast, views, and protocol. Approved mappings: screening mammography 77067 → 3D Screening Mammogram (77063); one-view/AP abdomen 74000 → XR Abdomen 1 View (74018); ABI → 93923; same-encounter pelvic 76856 + 76830 → combined pelvic/transvaginal option; US Elastography → US Abdomen Complete (76700); CT chest low dose with smoking-history indication → LDCT screening (71271).</p><p><strong>Exceptions:</strong> Do not use description-only search or invent mappings. Preserve Open exams. Stop if CPT, mapping, or material exam details remain unclear, or a required pelvic component is missing/Open. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-002 · Keep substantive order packets together</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> A Fax has an imaging order, referral, requisition, or actionable embedded order with substantive pages in the same patient-specific packet.</p><p><strong>Action:</strong> Tag all substantive packet pages Order and keep the run contiguous. For an exact two-page order Fax, both pages are Order only if page 1 is itself an Order page. A signature continuation inherits the preceding packet context. Never insert another tag between Order pages in the same packet.</p><p><strong>Exceptions:</strong> Routine covers and truly blank pages remain Gray X under OE-003; clearly separate unrelated attachments may keep their specific tag. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-003 · Fax cover and blank-page exclusion</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> A page is a routine cover with no other relevant information or is truly blank, and OE-002 does not apply.</p><p><strong>Action:</strong> Select Gray X.</p><p><strong>Exceptions:</strong> Do not apply to page 2 of an exact two-page Fax when page 1 is an order. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-004 · Default exam priority</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> The source explicitly indicates STAT or gives no priority.</p><p><strong>Action:</strong> Select Stat Read only for explicit STAT; otherwise leave priority blank or routine.</p><p><strong>Exceptions:</strong> Do not infer STAT from clinical severity. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-005 · Referring office fallback</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> The office is unclear or no exact source-supported match exists.</p><p><strong>Action:</strong> After provider selection, exclude Verify Office and New Office from the real-office count. Select the sole real office, or a defensible source-supported match when multiple remain.</p><p><strong>Exceptions:</strong> With zero real offices or no defensible choice, select Verify Office. Never select New Office. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-006 · Insurance normalization and sequence-specific mapping</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> An insurance plan must be validated or selected.</p><p><strong>Action:</strong> Map sliding-scale coverage to Uninsured Prompt Pay; BCBS names to the Blue Cross Blue Shield family; Cigna SureFit to Cigna; primary AARP Medicare to AARP Medicare Complete; and secondary AARP to its supplemental option. Prefer a normal center-linked option over OON.</p><p><strong>Exceptions:</strong> Apply primary/secondary blocking thresholds. Uncertain secondary coverage must not change the primary selection. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-008 · Similar Open patient exam within 30 days</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> Another Patient Exams row is exactly Open, within 30 calendar days of the request date, and matches modality and body-region family. Compare by family, not exact CPT; MRI head/brain/IAC variants and CT abdomen/pelvis variants are grouped, including contrast differences.</p><p><strong>Action:</strong> Set disposition OE-008. Make no request-field or Fax page-tag changes and never add a patient note.</p><p><strong>Exceptions:</strong> Exclude the checked yellow-green current exam, Closed rows, other non-Open statuses, and unrelated modality/anatomy. MRCP and liver MultiScan MRI are distinct when the descriptions establish it. When invoked, report the triggering exam and date of the matching prior Open exam. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-010 · Preserve Open exams</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> An Exams row has status exactly Open.</p><p><strong>Action:</strong> Leave it in place and continue reviewing source-supported exams.</p><p><strong>Exceptions:</strong> Pending exams may be corrected, replaced, or removed when clear evidence supports it. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-014 · Duplicate ICD-10 notice and cleanup</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> The same ICD-10 appears more than once.</p><p><strong>Action:</strong> Keep one duplicate, remove identical extras when supported, and reread the remaining codes. Do not use Notes or add a patient note.</p><p><strong>Exceptions:</strong> Do not remove merely similar codes. ICD uncertainty alone is not a stop; retain the best available primary code and continue. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-016 · Flag truly unresolved exam ambiguity</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> After reviewing evidence, approved rules, and CPT-based options, material ambiguity remains in modality, anatomy, laterality, contrast, views, or protocol, including when a supported center correction leaves no valid center-linked CPT.</p><p><strong>Action:</strong> Set disposition OE-016 and stop standard correction; make no further field or Fax page-tag changes after the flag decision.</p><p><strong>Exceptions:</strong> Do not flag harmless naming differences or uncertainty resolved by evidence and CPT-first search. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-017 · Red center-linkage warning</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> A red circled exclamation appears beside Insurance or Exams.</p><p><strong>Action:</strong> Treat the selection as invalid for the current center. Select a supported center-linked carrier/plan or exam, confirm the warning disappears, and reread the value.</p><p><strong>Exceptions:</strong> Do not change center just to clear the icon or choose a merely similar option. If no supported linked option exists or multiple remain plausible, stop; use OE-016 for unresolved exams. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-019 · Exhaustive referring-provider lookup</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> The source clearly identifies a provider but the UI is blank, Verify, or mismatched.</p><p><strong>Action:</strong> Search a distinctive token, wait up to 5 seconds, inspect returned and paginated options, and verify credentials and NPI when shown. After selection, apply OE-005.</p><p><strong>Exceptions:</strong> Initial unfiltered results, loading, and No Results Found are not exhaustive. Never select a merely similar provider; if no defensible match remains after a completed search, retain Verify. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-020 · Handwritten script-pad order handling</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> A structured preprinted requisition or script pad has checkbox grids or handwritten patient, exam, diagnosis, laterality, contrast, or provider fields.</p><p><strong>Action:</strong> Tag the actionable page Order; use the rendered image as primary evidence and treat OCR as provisional. Independently inspect exam details. If both sides are clearly marked, add/retain both side-specific exams when supported. Search the provider exhaustively and then apply OE-005.</p><p><strong>Exceptions:</strong> Do not infer unreadable marks, collapse a clear bilateral order, or invent a bilateral option. If both sides cannot be represented or material ambiguity remains, use OE-016. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-021 · EMR requests require no page tagging</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> The actual request source is EMR, whether the filter is EMR or All.</p><p><strong>Action:</strong> Complete order evidence review and reconciliation without classifying, tagging, or counting pages; skip page-tag checks and omit page-tag output.</p><p><strong>Exceptions:</strong> None. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-022 · Mixed-source routing under All</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> The Source filter is All.</p><p><strong>Action:</strong> Determine each request’s actual source from its request-level indicator. Apply Fax page-tagging only to Fax; re-detect after every Next or Save &amp; Next and record actual source.</p><p><strong>Exceptions:</strong> If source is unclear, stop before mutation. Never infer source from the All filter. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-023 · Existing-patient contact updates</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> Source evidence contains a phone or email for an existing patient.</p><p><strong>Action:</strong> Ensure a clear phone is in Cell Phone; copy the only clear Other Phone there when Cell Phone is blank. Add a clearly patient-owned source email when blank; replace a differing email only when a current patient-specific order or demographic document identifies it as the patient’s.</p><p><strong>Exceptions:</strong> Never use another person’s contact details. On uncertain email ownership or conflicting current sources, preserve the existing email and report email conflict; email ambiguity alone does not block the order. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-024 · Destination-center acceptance gate</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> The selected Center is changed.</p><p><strong>Action:</strong> Before saving, independently confirm the intended exam/CPT and primary carrier/plan are accepted and center-linked at the destination. Reread the center, exam, payer, and linkage indicators.</p><p><strong>Exceptions:</strong> A matching center name alone is insufficient. Do not save if exam acceptance fails or remains unclear. Resolve insurance naming with the best supported normal/in-network family option; only a direct member-identity conflict is an insurance failure. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-025 · Refresh address and phone without a recent completed exam</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> Existing patient, current request date available, and no completed Closed exam within the prior 365 calendar days. Use Scheduled Date, or Exam Created Date only if no Scheduled Date exists; exclude the current checked row and non-Closed statuses.</p><p><strong>Action:</strong> Update address and phone fields from a clear current patient-specific signed order or demographic source; put a clear phone in Cell Phone and a second clear phone in Other Phone. Reread changed fields.</p><p><strong>Exceptions:</strong> Do not use another person’s address or phone or change name, DOB, sex, or email under this rule. Preserve conflicting or unreadable values and report conflict. <strong>Status:</strong> Active.</p></div></details>
+        <details><summary>OE-026 · Determine new versus existing patient</summary><div class="oe-rule-copy"><p><strong>Trigger:</strong> Every request, before field mutation.</p><p><strong>Action:</strong> Classify as new only when the New Patient icon is visible and no other Patient Exams rows exist besides the checked current row, if present. If the icon is absent, classify as existing. For a new patient, skip OE-008 and OE-025 history checks.</p><p><strong>Exceptions:</strong> An empty Patient Exams section alone does not establish new status. If the icon is present with any other history row, stop and report patient status conflict. <strong>Status:</strong> Active.</p></div></details>
+        </div>
+      </details>
+    </section>
+    <section class="card audit-card">
+      <div class="audit-head">Audit</div>
+      <div class="audit-sections">
+        <div class="audit-item"><div class="audit-label">Work ID</div><div class="audit-value" id="audit-work-id"></div></div>
+        <div class="audit-item"><div class="audit-label">Page tags</div><div class="audit-value" id="audit-page-tags"></div></div>
+        <div class="audit-item"><div class="audit-label">Changed fields</div><div class="audit-value" id="audit-changed-fields"></div></div>
+      </div>
+      <details id="step-log" hidden><summary>Step log · 4 events</summary><div class="log">
+        <div class="log-row"><span class="time">06:54:05</span><span class="tag">selected</span><span>reveal tab · Secondary Policy · strip 2</span></div>
+        <div class="log-row"><span class="time">06:54:05</span><span class="tag">selected</span><span>restore tab · Primary Policy · strip 2</span></div>
+        <div class="log-row"><span class="time">06:54:54</span><span class="tag">selected</span><span>reveal tab · Secondary Policy · strip 2</span></div>
+        <div class="log-row"><span class="time">06:54:54</span><span class="tag">selected</span><span>restore tab · Primary Policy · strip 2</span></div>
+      </div></details>
+    </section>
+    <section class="card diagnostics"><details><summary>Diagnostics</summary><button class="ping" id="ping">Ping backend</button><span class="ping-result" id="ping-result"></span></details></section>
+  </main>
+  <footer><span>FaxDE UI Preview</span><a href="#">Sign out</a></footer>
+</div>
+<script>
+const toast=document.getElementById('toast');
+const outputTitles={Calibrate:'Calibrate output',Process:'Process output','Full Auto':'Full auto output'};
+document.querySelectorAll('.mode-tab').forEach(button=>button.addEventListener('click',()=>{
+  document.querySelectorAll('.mode-tab').forEach(tab=>{tab.classList.remove('active');tab.setAttribute('aria-pressed','false');});
+  button.classList.add('active');button.setAttribute('aria-pressed','true');
+  document.getElementById('output-heading').textContent=outputTitles[button.textContent.trim()];
+}));
+let processing=false;
+document.getElementById('start').addEventListener('click',()=>{
+  if(processing)return;
+  processing=true;
+  const startButton=document.getElementById('start');
+  const statusLabel=document.getElementById('toast-label');
+  const elapsedLabel=document.getElementById('elapsed');
+  const set=(id,value)=>document.getElementById(id).textContent=value;
+  startButton.disabled=true;
+  document.getElementById('pre-start-message').hidden=true;
+  toast.classList.add('visible');toast.classList.remove('completed');
+  statusLabel.textContent='Processing Started';
+  elapsedLabel.textContent='0s';
+  const startedAt=Date.now();
+  const timerInterval=setInterval(()=>{
+    elapsedLabel.textContent=Math.min(4,Math.floor((Date.now()-startedAt)/1000))+'s';
+  },100);
+  setTimeout(()=>{
+    clearInterval(timerInterval);
+    elapsedLabel.textContent='4s';
+    statusLabel.textContent='Processing Completed';
+    toast.classList.add('completed');
+    set('page-number','1');set('page-tag','Gray X');set('page-basis','OE-003');
+    set('page-number-2','2');set('page-tag-2','Order');set('page-basis-2','OE-003');
+    set('page-number-3-5','3–5');set('page-tag-3-5','Clinical history');set('page-basis-3-5','OE-003');
+    set('mismatch-field-1','referring_office');set('mismatch-current-1','Example Provider Office');set('mismatch-should-1','—');set('mismatch-basis-1','OE-005');
+    set('mismatch-field-2','primary_insurance_carrier');set('mismatch-current-2','—');set('mismatch-should-2','—');set('mismatch-basis-2','OE-006');
+    document.querySelectorAll('.should').forEach(cell=>cell.classList.add('has-value'));
+    const statuses=[['patient-status','✓','check','Matched'],['provider-status','⚠','warning','Review needed'],['insurance-status','⚠','warning','Review needed'],['exam-icd-status','✓','check','Matched']];
+    statuses.forEach(([id,icon,kind,label])=>{const status=document.getElementById(id);status.textContent=icon;status.classList.add(kind);status.setAttribute('role','img');status.setAttribute('aria-label',label);status.hidden=false;});
+    const matchingFields=['patient-first-name','patient-last-name','patient-dob','patient-address','patient-phone','patient-email','provider-name','insurance-primary-policy','insurance-primary-group','insurance-secondary-name','insurance-secondary-policy','insurance-secondary-group','exam-1','icd10-codes','exam-priority'];
+    matchingFields.forEach(id=>{const status=document.getElementById(id);status.textContent='✓';status.setAttribute('role','img');status.setAttribute('aria-label','Matched');status.hidden=false;});
+    ['provider-office','insurance-primary-name'].forEach(id=>{const status=document.getElementById(id);status.textContent='⚠';status.setAttribute('role','img');status.setAttribute('aria-label','Mismatch');status.hidden=false;});
+    set('audit-work-id','DEMO-001');set('audit-page-tags','1: Gray X · 2: Order · 3–5: Clinical history');set('audit-changed-fields','referring_office · primary_insurance_carrier');
+    document.getElementById('step-log').hidden=false;
+    startButton.disabled=false;
+    processing=false;
+  },4000);
+});
+document.getElementById('ping').addEventListener('click',()=>{document.getElementById('ping-result').textContent='Backend connected';});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
